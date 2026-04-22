@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Password Strength Checker — Analyze &amp; Fortify Your Passwords</title>
+  <meta name="description" content="A real-time password strength analyzer with entropy-based scoring, crack-time estimation, and an integrated password generator. Secure your digital life." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ═══════════ Navigation ═══════════ -->
+  <nav id="main-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" aria-label="Home">
+        <span class="logo-icon">🛡️</span>
+        <span class="logo-text">PassGuard</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#checker">Checker</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#why-it-matters">Why It Matters</a></li>
+        <li><a href="#tips">Tips</a></li>
+      </ul>
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════ Hero / Checker Section ═══════════ -->
+  <section id="checker" class="hero">
+    <div class="hero-bg-grid" aria-hidden="true"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+
+    <div class="container">
+      <div class="hero-header">
+        <span class="hero-badge">Real-Time Analysis</span>
+        <h1>Password Strength<br /><span class="gradient-text">Checker</span></h1>
+        <p class="hero-subtitle">Evaluate your password's resilience with entropy-based scoring, crack-time estimation, and actionable improvement suggestions.</p>
+      </div>
+
+      <!-- ── Password Input Card ── -->
+      <div class="checker-card" id="checker-card">
+        <div class="input-group">
+          <label for="password-input" class="sr-only">Enter your password</label>
+          <input
+            type="password"
+            id="password-input"
+            placeholder="Enter your password…"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="strength-label"
+          />
+          <button id="toggle-visibility" class="btn-icon" aria-label="Show password" type="button">
+            <svg id="icon-eye" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="icon-eye-off" class="icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+
+        <!-- Strength Meter -->
+        <div class="strength-meter" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Password strength">
+          <div class="strength-track">
+            <div id="strength-fill" class="strength-fill"></div>
+          </div>
+          <div class="strength-meta">
+            <span id="strength-label" class="strength-label">Enter a password</span>
+            <span id="strength-score" class="strength-score"></span>
+          </div>
+        </div>
+
+        <!-- Crack Time -->
+        <div id="crack-time-container" class="crack-time-container hidden-fade">
+          <div class="crack-time-icon">⏱️</div>
+          <div class="crack-time-info">
+            <span class="crack-time-label">Estimated time to crack</span>
+            <span id="crack-time-value" class="crack-time-value">—</span>
+          </div>
+        </div>
+
+        <!-- Entropy -->
+        <div id="entropy-container" class="entropy-container hidden-fade">
+          <div class="entropy-icon">📊</div>
+          <div class="entropy-info">
+            <span class="entropy-label">Entropy</span>
+            <span id="entropy-value" class="entropy-value">— bits</span>
+          </div>
+        </div>
+
+        <!-- Checklist -->
+        <ul id="checklist" class="checklist" aria-label="Password requirements">
+          <li id="chk-length" class="chk-item" data-met="false">
+            <span class="chk-icon"></span>
+            <span>Minimum 8 characters</span>
+          </li>
+          <li id="chk-upper" class="chk-item" data-met="false">
+            <span class="chk-icon"></span>
+            <span>Uppercase letter (A–Z)</span>
+          </li>
+          <li id="chk-lower" class="chk-item" data-met="false">
+            <span class="chk-icon"></span>
+            <span>Lowercase letter (a–z)</span>
+          </li>
+          <li id="chk-number" class="chk-item" data-met="false">
+            <span class="chk-icon"></span>
+            <span>Number (0–9)</span>
+          </li>
+          <li id="chk-special" class="chk-item" data-met="false">
+            <span class="chk-icon"></span>
+            <span>Special character (!@#$…)</span>
+          </li>
+        </ul>
+
+        <!-- Common Password Warning -->
+        <div id="common-warning" class="common-warning hidden-fade" role="alert">
+          <span class="warning-icon">⚠️</span>
+          <span>This password is in the list of commonly breached passwords. Avoid using it.</span>
+        </div>
+
+        <!-- Suggestions -->
+        <div id="suggestions-container" class="suggestions-container hidden-fade">
+          <h3 class="suggestions-title">💡 Suggestions</h3>
+          <ul id="suggestions-list" class="suggestions-list"></ul>
+        </div>
+      </div>
+
+      <!-- ── Password Generator ── -->
+      <div class="generator-card" id="generator-card">
+        <div class="generator-header">
+          <h2>🔑 Password Generator</h2>
+          <p>Generate a cryptographically strong password with custom rules.</p>
+        </div>
+
+        <div class="generator-output-group">
+          <input type="text" id="generated-password" readonly aria-label="Generated password" placeholder="Click Generate…" />
+          <button id="copy-btn" class="btn-icon" aria-label="Copy password" type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+
+        <div class="generator-controls">
+          <div class="control-row">
+            <label for="gen-length">Length: <strong id="gen-length-val">16</strong></label>
+            <input type="range" id="gen-length" min="8" max="64" value="16" />
+          </div>
+          <div class="control-row toggles">
+            <label class="toggle-label"><input type="checkbox" id="gen-upper" checked /> Uppercase</label>
+            <label class="toggle-label"><input type="checkbox" id="gen-lower" checked /> Lowercase</label>
+            <label class="toggle-label"><input type="checkbox" id="gen-numbers" checked /> Numbers</label>
+            <label class="toggle-label"><input type="checkbox" id="gen-symbols" checked /> Symbols</label>
+          </div>
+        </div>
+
+        <button id="generate-btn" class="btn-primary" type="button">Generate Password</button>
+        <button id="use-generated-btn" class="btn-secondary" type="button">Use in Checker ↑</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ How It Works ═══════════ -->
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <span class="section-badge">Under the Hood</span>
+      <h2 class="section-title">How It <span class="gradient-text">Works</span></h2>
+      <p class="section-subtitle">We go beyond simple rule checks — our engine calculates information entropy to give you a true measure of password strength.</p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-icon">🧮</div>
+          <h3>Entropy Calculation</h3>
+          <p>Entropy measures the randomness of your password in bits. A password with <strong>N</strong> possible characters and length <strong>L</strong> has entropy <code>E = L × log₂(N)</code>. More bits = exponentially harder to crack.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">⏳</div>
+          <h3>Crack-Time Estimation</h3>
+          <p>We model offline attacks at <strong>10 billion guesses/second</strong> (modern GPU clusters). The time to brute-force is <code>2^E / guesses_per_sec</code>, giving you a realistic threat picture.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">📋</div>
+          <h3>Common Password Detection</h3>
+          <p>Your password is checked against a curated list of the most commonly breached passwords. If it matches, it can be cracked <strong>instantly</strong> via dictionary attack — regardless of its entropy.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">🧠</div>
+          <h3>Pattern Analysis</h3>
+          <p>We detect predictable patterns like sequential characters (<code>abc</code>, <code>123</code>), repeated characters, and keyboard walks (<code>qwerty</code>), which significantly reduce effective entropy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ Why It Matters ═══════════ -->
+  <section id="why-it-matters" class="section section-alt">
+    <div class="container">
+      <span class="section-badge">The Stakes</span>
+      <h2 class="section-title">Why Strong Passwords <span class="gradient-text">Matter</span></h2>
+      <p class="section-subtitle">In a world of automated attacks, your password is often the only barrier between your data and a threat actor.</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number" data-target="81">0</span><span class="stat-suffix">%</span>
+          <span class="stat-desc">of breaches involve weak or stolen passwords</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-target="10">0</span><span class="stat-suffix">B+</span>
+          <span class="stat-desc">passwords leaked in public data breaches</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-target="6">0</span><span class="stat-suffix"> sec</span>
+          <span class="stat-desc">to crack "password123" on a modern GPU</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" data-target="128">0</span><span class="stat-suffix"> bits</span>
+          <span class="stat-desc">of entropy recommended for critical accounts</span>
+        </div>
+      </div>
+
+      <div class="breach-timeline">
+        <h3>The Reality of Weak Passwords</h3>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Dictionary Attack</h4>
+              <p>Attackers try every word in the dictionary — common passwords fall in <strong>milliseconds</strong>.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Credential Stuffing</h4>
+              <p>Leaked passwords from one breach are used to unlock accounts on <strong>other services</strong>.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Brute-Force at Scale</h4>
+              <p>GPU clusters can test <strong>billions of combinations per second</strong> against password hashes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ Tips ═══════════ -->
+  <section id="tips" class="section">
+    <div class="container">
+      <span class="section-badge">Best Practices</span>
+      <h2 class="section-title">Tips for <span class="gradient-text">Strong Passwords</span></h2>
+      <p class="section-subtitle">Follow these expert-recommended strategies to keep your accounts secure.</p>
+
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-number">01</div>
+          <h3>Use a Password Manager</h3>
+          <p>Let a password manager generate and store unique, complex passwords for every account. You only need to remember one master password.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-number">02</div>
+          <h3>Go Long, Not Complex</h3>
+          <p>A 20-character passphrase like <code>correct-horse-battery-staple</code> is stronger — and easier to remember — than <code>P@$$w0rd!</code>.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-number">03</div>
+          <h3>Enable Two-Factor Auth</h3>
+          <p>Even the strongest password can be phished. Add a second factor (TOTP, hardware key) so a compromised password alone isn't enough.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-number">04</div>
+          <h3>Never Reuse Passwords</h3>
+          <p>One breach exposes every account that shares the same password. Unique passwords contain the blast radius of any single leak.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-number">05</div>
+          <h3>Avoid Personal Info</h3>
+          <p>Names, birthdays, and pet names are easily guessable through social engineering. Keep your passwords disconnected from your identity.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-number">06</div>
+          <h3>Audit Regularly</h3>
+          <p>Check haveibeenpwned.com periodically. If any of your credentials appear in a breach, change them immediately.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ Footer ═══════════ -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="logo-icon">🛡️</span>
+          <span class="logo-text">PassGuard</span>
+          <p class="footer-tagline">Your first line of defense in the digital world.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#checker">Checker</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#why-it-matters">Why It Matters</a></li>
+            <li><a href="#tips">Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://haveibeenpwned.com" target="_blank" rel="noopener">Have I Been Pwned?</a></li>
+            <li><a href="https://pages.nist.gov/800-63-3/" target="_blank" rel="noopener">NIST Guidelines</a></li>
+            <li><a href="https://owasp.org/www-community/password-special-characters" target="_blank" rel="noopener">OWASP Standards</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Privacy</h4>
+          <p class="footer-privacy">All analysis is performed <strong>entirely in your browser</strong>. Your password is never transmitted or stored.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 PassGuard. Built for security, with ❤️.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
